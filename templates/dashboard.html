@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Welcome, {{ current_user.username }}!</h1>
+    <h2>Your Flights</h2>
+    <ul>
+        {% for flight in flights %}
+            <li>{{ flight.flight_number }}: {{ flight.departure_airport }} to {{ flight.arrival_airport }} ({{ flight.departure_date }} - {{ flight.arrival_date }})</li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('add_flight') }}">Add a New Flight</a> |
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>
