@@ -1,20 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <h1>Welcome, {{ current_user.username }}!</h1>
-    <h2>Your Flights</h2>
-    <ul>
-        {% for flight in flights %}
-            <li>{{ flight.flight_number }}: {{ flight.departure_airport }} to {{ flight.arrival_airport }} ({{ flight.departure_date }} - {{ flight.arrival_date }})</li>
-        {% endfor %}
-    </ul>
-    <a href="{{ url_for('add_flight') }}">Add a New Flight</a> |
-    <a href="{{ url_for('logout') }}">Logout</a>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<div class="container">
+    <h1 class="text-center my-4">Your Flights</h1>
+
+    <table class="table table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Flight Number</th>
+                <th>Departure</th>
+                <th>Arrival</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for flight in flights %}
+            <tr>
+                <td>{{ flight.flight_number }}</td>
+                <td>{{ flight.departure_airport }} ({{ flight.departure_date }})</td>
+                <td>{{ flight.arrival_airport }} ({{ flight.arrival_date }})</td>
+                <td>
+                    <a href="{{ url_for('track_flight', flight_number=flight.flight_number) }}" class="btn btn-info btn-sm">Track</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('add_flight') }}" class="btn btn-primary">Add New Flight</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+    </div>
+</div>
+
+{% endblock %}

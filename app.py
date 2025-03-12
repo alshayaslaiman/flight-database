@@ -2,26 +2,28 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from FlightRadarAPI import FlightRadar24API
 
-# Initialize Flask application and the database
+# Initialize Flask application
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flight_database.db'  # SQLite database for simplicity
-app.config['SECRET_KEY'] = 'mysecretkey'  # Secret key for session management
-db = SQLAlchemy(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flight_database.db'
+app.config['SECRET_KEY'] = 'mysecretkey'
 
-# Initialize the login manager
+# Initialize database and login manager
+db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
+fr_api = FlightRadar24API()
 
 
-# User model for authentication
+# ==================== USER MODEL ==================== #
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
 
 
-# Flight model to store flight details
+# ==================== FLIGHT MODEL ==================== #
 class Flight(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     flight_number = db.Column(db.String(100), nullable=False)
@@ -32,18 +34,17 @@ class Flight(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 
-# Create database tables if they don't exist
+# ==================== CREATE DATABASE TABLES ==================== #
 with app.app_context():
     db.create_all()
 
 
-# User loader function for login manager
+# ==================== USER AUTHENTICATION ==================== #
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-# Route for the login page
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -60,7 +61,36 @@ def login():
     return render_template('login.html')
 
 
-# Route for dashboard (display user's flights)
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        existing_user = User.query.filter_by(username=username).first()
+
+        if existing_user:
+            flash('Username already taken. Choose another one.', 'danger')
+            return redirect(url_for('register'))
+
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+        new_user = User(username=username, password=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+
+        flash('Account created successfully! You can now log in.', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+
+# ==================== DASHBOARD ==================== #
 @app.route('/dashboard')
 @login_required
 def dashboard():
@@ -68,7 +98,7 @@ def dashboard():
     return render_template('dashboard.html', flights=flights)
 
 
-# Route for adding a flight
+# ==================== ADD A FLIGHT ==================== #
 @app.route('/add_flight', methods=['GET', 'POST'])
 @login_required
 def add_flight():
@@ -96,43 +126,17 @@ def add_flight():
     return render_template('add_flight.html')
 
 
-# Route for logout
-@app.route('/logout')
+# ==================== TRACK A FLIGHT ==================== #
+@app.route('/track/<flight_number>')
 @login_required
-def logout():
-    logout_user()
-    return redirect(url_for('login'))
+def track_flight(flight_number):
+    try:
+        flight = fr_api.get_flight(flight_number)
+        return render_template('track.html', flight=flight)
+    except Exception as e:
+        return f"Error fetching flight data: {e}"
 
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-
-        # Check if user already exists
-        existing_user = User.query.filter_by(username=username).first()
-        if existing_user:
-            flash('Username already taken. Choose another one.', 'danger')
-            return redirect(url_for('register'))
-
-        # Hash the password before saving
-        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-
-        # Create new user
-        new_user = User(username=username, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
-
-        flash('Account created successfully! You can now log in.', 'success')
-        return redirect(url_for('login'))
-
-    return render_template('register.html')
-
-
-# Run the app
+# ==================== RUN FLASK APP ==================== #
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
