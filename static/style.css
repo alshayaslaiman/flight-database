@@ -111,3 +111,40 @@ body {
     background: rgba(0, 0, 0, 0.8);
     margin-top: 30px;
 }
+/* Flight Cards */
+.flight-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+    transition: transform 0.3s;
+}
+
+.flight-card:hover {
+    transform: scale(1.05);
+}
+
+/* Buttons */
+.btn {
+    font-size: 16px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-success:hover {
+    background: #28a745;
+}
+
+.btn-info:hover {
+    background: #007bff;
+}
+
+.btn-danger:hover {
+    background: #dc3545;
+}
+
+/* Form Styling */
+.card {
+    border-radius: 12px;
+}

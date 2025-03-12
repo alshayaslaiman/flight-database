@@ -1,12 +1,14 @@
+import os
+import requests
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from flightradar24 import FlightRadar24API
 
-fr_api = FlightRadar24API()
+# ==================== Hardcoded FlightAware API Key ==================== #
+FLIGHTAWARE_API_KEY = "gy7KekwaegTTb8n0NzHklfDGYSjwNhui"  # Replace this with your real API key
 
-# Initialize Flask application
+# ==================== Initialize Flask App ==================== #
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flight_database.db'
 app.config['SECRET_KEY'] = 'mysecretkey'
@@ -15,15 +17,12 @@ app.config['SECRET_KEY'] = 'mysecretkey'
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
-fr_api = FlightRadar24API()
-
 
 # ==================== USER MODEL ==================== #
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
-
 
 # ==================== FLIGHT MODEL ==================== #
 class Flight(db.Model):
@@ -35,17 +34,14 @@ class Flight(db.Model):
     arrival_airport = db.Column(db.String(100), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-
 # ==================== CREATE DATABASE TABLES ==================== #
 with app.app_context():
     db.create_all()
-
 
 # ==================== USER AUTHENTICATION ==================== #
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -61,7 +57,6 @@ def login():
             flash('Invalid username or password.', 'danger')
 
     return render_template('login.html')
-
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -84,13 +79,11 @@ def register():
 
     return render_template('register.html')
 
-
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
-
 
 # ==================== DASHBOARD ==================== #
 @app.route('/dashboard')
@@ -98,7 +91,6 @@ def logout():
 def dashboard():
     flights = Flight.query.filter_by(user_id=current_user.id).all()
     return render_template('dashboard.html', flights=flights)
-
 
 # ==================== ADD A FLIGHT ==================== #
 @app.route('/add_flight', methods=['GET', 'POST'])
@@ -127,23 +119,25 @@ def add_flight():
 
     return render_template('add_flight.html')
 
-
-# ==================== TRACK A FLIGHT ==================== #
+# ==================== TRACK A FLIGHT (FlightAware API) ==================== #
 @app.route('/track/<flight_number>')
 @login_required
 def track_flight(flight_number):
     try:
-        # Fetch flight data from FlightRadar24
-        flight_data = fr_api.get_flight(flight_number)
+        url = f"https://aeroapi.flightaware.com/aeroapi/flights/{flight_number}"
+        headers = {"x-apikey": FLIGHTAWARE_API_KEY}
 
-        if flight_data:
-            return render_template('track.html', flight=flight_data)
+        response = requests.get(url, headers=headers)
+        data = response.json()
+
+        if "flights" in data and len(data["flights"]) > 0:
+            flight_info = data["flights"][0]
+            return render_template('track.html', flight=flight_info)
         else:
             return "Flight not found."
+
     except Exception as e:
         return f"Error fetching flight data: {e}"
-
-
 
 # ==================== RUN FLASK APP ==================== #
 if __name__ == '__main__':

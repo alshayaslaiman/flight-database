@@ -3,24 +3,31 @@
 {% block content %}
 
 <div class="container">
-    <h1 class="text-center my-4">Your Flights</h1>
+    <h1 class="text-center my-4">✈️ Your Flights</h1>
 
     <div class="row">
         {% for flight in flights %}
-        <div class="col-md-4">
-            <div class="flight-card">
-                <h4 class="text-warning">{{ flight.flight_number }}</h4>
-                <p><strong>Departure:</strong> {{ flight.departure_airport }} ({{ flight.departure_date }})</p>
-                <p><strong>Arrival:</strong> {{ flight.arrival_airport }} ({{ flight.arrival_date }})</p>
-                <a href="{{ url_for('track_flight', flight_number=flight.flight_number) }}" class="btn btn-info btn-sm">Track</a>
+        <div class="col-md-6 col-lg-4">
+            <div class="card flight-card p-3 shadow-lg">
+                <h5 class="text-primary text-center"><strong>Flight {{ flight.flight_number }}</strong></h5>
+                <hr>
+
+                <p><strong>🛫 Departure:</strong> {{ flight.departure_airport }} ({{ flight.departure_date }})</p>
+                <p><strong>🛬 Arrival:</strong> {{ flight.arrival_airport }} ({{ flight.arrival_date }})</p>
+
+                <div class="text-center">
+                    <a href="{{ url_for('track_flight', flight_number=flight.flight_number) }}" class="btn btn-info btn-sm">
+                        🎯 Track Flight
+                    </a>
+                </div>
             </div>
         </div>
         {% endfor %}
     </div>
 
     <div class="text-center mt-4">
-        <a href="{{ url_for('add_flight') }}" class="btn btn-primary">Add New Flight</a>
-        <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+        <a href="{{ url_for('add_flight') }}" class="btn btn-success px-4 py-2">➕ Add New Flight</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-danger px-4 py-2">🚪 Logout</a>
     </div>
 </div>
 

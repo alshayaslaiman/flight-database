@@ -1,26 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Flight</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <h1>Add a New Flight</h1>
-    <form method="POST">
-        <label for="flight_number">Flight Number:</label>
-        <input type="text" id="flight_number" name="flight_number" required>
-        <label for="departure_date">Departure Date:</label>
-        <input type="date" id="departure_date" name="departure_date" required>
-        <label for="arrival_date">Arrival Date:</label>
-        <input type="date" id="arrival_date" name="arrival_date" required>
-        <label for="departure_airport">Departure Airport:</label>
-        <input type="text" id="departure_airport" name="departure_airport" required>
-        <label for="arrival_airport">Arrival Airport:</label>
-        <input type="text" id="arrival_airport" name="arrival_airport" required>
-        <button type="submit">Add Flight</button>
-    </form>
-    <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Add Flight{% endblock %}
+{% block content %}
+
+<div class="container">
+    <h1 class="text-center my-4">🛫 Add a New Flight</h1>
+
+    <div class="card p-4 bg-light shadow-lg">
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label"><strong>Flight Number</strong></label>
+                <input type="text" class="form-control" name="flight_number" required>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label"><strong>Departure Airport</strong></label>
+                    <input type="text" class="form-control" name="departure_airport" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><strong>Arrival Airport</strong></label>
+                    <input type="text" class="form-control" name="arrival_airport" required>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label class="form-label"><strong>Departure Date & Time</strong></label>
+                    <input type="datetime-local" class="form-control" name="departure_date" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><strong>Arrival Date & Time</strong></label>
+                    <input type="datetime-local" class="form-control" name="arrival_date" required>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success px-4 py-2">✈️ Save Flight</button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary px-4 py-2">🔙 Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

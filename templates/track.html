@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Track Flight{% endblock %}
+{% block content %}
+
+<div class="container">
+    <h1 class="text-center">Tracking Flight {{ flight["ident"] }}</h1>
+
+    <div class="flight-card">
+        <p><strong>Airline:</strong> {{ flight["airline"] }}</p>
+        <p><strong>Status:</strong> {{ flight["status"] }}</p>
+        <p><strong>Departure:</strong> {{ flight["origin"]["name"] }} ({{ flight["origin"]["code"] }})</p>
+        <p><strong>Arrival:</strong> {{ flight["destination"]["name"] }} ({{ flight["destination"]["code"] }})</p>
+        <p><strong>Scheduled Departure:</strong> {{ flight["scheduled_off"] }}</p>
+        <p><strong>Scheduled Arrival:</strong> {{ flight["scheduled_on"] }}</p>
+
+        <h3>Live Map</h3>
+        <iframe src="https://flightaware.com/live/flight/{{ flight['ident'] }}" width="100%" height="400"></iframe>
+    </div>
+</div>
+
+{% endblock %}
