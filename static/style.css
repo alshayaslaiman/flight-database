@@ -1,57 +1,113 @@
+/* 🌟 General Styles */
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    text-align: center;
-}
-
-h1, h2 {
-    color: #333;
-}
-
-form {
-    max-width: 400px;
-    margin: 0 auto;
-}
-
-label {
-    display: block;
-    margin: 10px 0 5px;
-}
-
-input, button {
-    width: 100%;
-    padding: 8px;
-    margin: 5px 0 15px 0;
-}
-
-button {
-    background-color: #4CAF50;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to right, #1e3c72, #2a5298);
     color: white;
-    border: none;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-a {
-    display: block;
-    margin-top: 20px;
-    color: #4CAF50;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-ul {
-    list-style-type: none;
+    margin: 0;
     padding: 0;
 }
 
-ul li {
-    background: #f4f4f4;
-    margin: 10px auto;
-    padding: 10px;
+/* 🌟 Navbar */
+.navbar {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 15px;
+}
+
+.navbar-brand {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffcc00 !important;
+}
+
+/* 🌟 Container Styling */
+.container {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* 🌟 Table */
+.table {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.table th {
+    background: #ffcc00;
+    color: black;
+}
+
+.table td {
+    color: white;
+}
+
+/* 🌟 Buttons */
+.btn {
+    font-size: 16px;
+    padding: 10px 20px;
     border-radius: 5px;
-    width: 300px;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-primary {
+    background: #ff6600;
+    border: none;
+}
+
+.btn-primary:hover {
+    background: #ff3300;
+}
+
+.btn-info {
+    background: #0099ff;
+    border: none;
+}
+
+.btn-info:hover {
+    background: #007acc;
+}
+
+.btn-danger {
+    background: #ff3333;
+    border: none;
+}
+
+.btn-danger:hover {
+    background: #cc0000;
+}
+
+/* 🌟 Background Animation */
+@keyframes animatedBackground {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+    100% { background-position: 0% 0%; }
+}
+
+body {
+    background-image: url('https://source.unsplash.com/1600x900/?airplane,sky');
+    background-size: cover;
+    background-attachment: fixed;
+    animation: animatedBackground 30s infinite alternate;
+}
+
+/* 🌟 Flight Cards */
+.flight-card {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    margin-bottom: 20px;
+    transition: transform 0.3s;
+}
+
+.flight-card:hover {
+    transform: scale(1.05);
+}
+
+/* 🌟 Footer */
+.footer {
+    text-align: center;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.8);
+    margin-top: 30px;
 }
