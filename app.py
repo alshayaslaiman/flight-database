@@ -2,7 +2,9 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from FlightRadarAPI import FlightRadar24API
+from flightradar24 import FlightRadar24API
+
+fr_api = FlightRadar24API()
 
 # Initialize Flask application
 app = Flask(__name__)
@@ -131,10 +133,16 @@ def add_flight():
 @login_required
 def track_flight(flight_number):
     try:
-        flight = fr_api.get_flight(flight_number)
-        return render_template('track.html', flight=flight)
+        # Fetch flight data from FlightRadar24
+        flight_data = fr_api.get_flight(flight_number)
+
+        if flight_data:
+            return render_template('track.html', flight=flight_data)
+        else:
+            return "Flight not found."
     except Exception as e:
         return f"Error fetching flight data: {e}"
+
 
 
 # ==================== RUN FLASK APP ==================== #
