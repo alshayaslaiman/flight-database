@@ -33,6 +33,7 @@ class Flight(db.Model):
     departure_airport = db.Column(db.String(100), nullable=False)
     arrival_airport = db.Column(db.String(100), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    year = db.Column(db.Integer, nullable=False)  # New: Track flight year
 
 # ==================== CREATE DATABASE TABLES ==================== #
 with app.app_context():
@@ -138,6 +139,21 @@ def track_flight(flight_number):
 
     except Exception as e:
         return f"Error fetching flight data: {e}"
+
+
+@app.route('/delete_flight/<int:flight_id>', methods=['POST'])
+@login_required
+def delete_flight(flight_id):
+    flight = Flight.query.get(flight_id)
+    if flight and flight.user_id == current_user.id:
+        db.session.delete(flight)
+        db.session.commit()
+        flash("Flight deleted successfully!", "success")
+    else:
+        flash("You do not have permission to delete this flight.", "danger")
+
+    return redirect(url_for('dashboard'))
+
 
 # ==================== RUN FLASK APP ==================== #
 if __name__ == '__main__':
